@@ -60,16 +60,16 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 		//mario->SetState(MARIO_STATE_JUMP);
 		Simon->SetState(SIMON_STATE_JUMP);
 		break;
-	case DIK_A: // reset
-		/*mario->SetState(MARIO_STATE_IDLE);
-		mario->SetLevel(MARIO_LEVEL_BIG);
-		mario->SetPosition(50.0f, 0.0f);
-		mario->SetSpeed(0, 0);*/
-
+	case DIK_D: // reset
 		/*Simon->SetState(SIMON_STATE_IDLE);
 		Simon->SetPosition(50.0f, 0.0f);
 		Simon->SetSpeed(0, 0);*/
 
+		if (Simon->GetState() == SIMON_STATE_SITDOWN) 
+			Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
+		break;
+	case DIK_S:
+		if (Simon->GetState() == SIMON_STATE_IDLE) Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 		break;
 	}
 }
@@ -149,9 +149,29 @@ void LoadResources()
 	sprites->Add(10010, 316, 199, 346, 261, texSimon); // walking right
 	sprites->Add(10011, 371, 197, 404, 260, texSimon);
 	sprites->Add(10012, 434, 199, 468, 262, texSimon);
+	 
+	sprites->Add(10020, 195, 202, 228, 263, texSimon); // sitdown right
+	sprites->Add(10021, 249, 2, 285, 64, texSimon); // sitdown left
 
-	sprites->Add(10020, 196, 215, 228, 263, texSimon); // sitdown right
-	sprites->Add(10021, 251, 16, 285, 64, texSimon); // sitdown left
+	sprites->Add(10030, 195, 202, 228, 263, texSimon); // sit use whip right
+	sprites->Add(10031, 0, 265, 49, 329, texSimon); 
+	sprites->Add(10032, 432, 333, 470, 394, texSimon); 
+	sprites->Add(10033, 373, 332, 420, 393, texSimon);
+	 
+	sprites->Add(10040, 135, 3, 167, 64, texSimon); // sit use whip left
+	sprites->Add(10041, 428, 66, 479, 131, texSimon); 
+	sprites->Add(10042, 10, 133, 43, 195, texSimon); 
+	sprites->Add(10043, 61, 133, 106, 197, texSimon);
+
+	sprites->Add(10050, 316, 199, 346, 261, texSimon); // stand use whip right
+	sprites->Add(10051, 119, 201, 169, 263, texSimon);
+	sprites->Add(10052, 74, 200, 107, 262, texSimon);
+	sprites->Add(10053, 15, 202, 61, 262, texSimon);
+
+	sprites->Add(10060, 135, 3, 167, 64, texSimon); // stand use whip left
+	sprites->Add(10061, 310, 3, 360, 64, texSimon);
+	sprites->Add(10062, 373, 3, 408, 63, texSimon);
+	sprites->Add(10063, 421, 3, 467, 64, texSimon);
 
 	LPANIMATION ani;
 
@@ -182,7 +202,37 @@ void LoadResources()
 	ani->Add(10014);
 	ani->Add(10015);
 	animations->Add(5, ani);
-	
+
+	ani = new CAnimation(100); // sit use whip right
+	ani->Add(10030);
+	ani->Add(10031);
+	ani->Add(10032);
+	ani->Add(10033);
+	animations->Add(6, ani);
+
+	ani = new CAnimation(100); // sit use whip left
+	ani->Add(10040);
+	ani->Add(10041);
+	ani->Add(10042);
+	ani->Add(10043);
+	animations->Add(7, ani);
+
+	ani = new CAnimation(100);  // stand use whip right
+	ani->Add(10050);
+	ani->Add(10051);
+	ani->Add(10052);
+	ani->Add(10053);
+	animations->Add(8, ani);
+
+	ani = new CAnimation(100);  // stand use whip left
+	ani->Add(10060);
+	ani->Add(10061);
+	ani->Add(10052);
+	ani->Add(10063);
+	animations->Add(9, ani);
+
+	ani = new CAnimation(100);
+
 
 	Simon = new CSimon();
 
@@ -194,6 +244,12 @@ void LoadResources()
 
 	Simon->AddAnimation(4); // walking right
 	Simon->AddAnimation(5); // walking left
+
+	Simon->AddAnimation(6); // sit use whip right
+	Simon->AddAnimation(7); // sit use whip left
+
+	Simon->AddAnimation(8); // stand use whip right
+	Simon->AddAnimation(9); // stand use whip left
 
 	Simon->SetPosition(50.0f, 150.0f);
 
@@ -207,112 +263,6 @@ void LoadResources()
 
 	//LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
 
-	//// big
-	//sprites->Add(10001, 246, 154, 260, 181, texMario);		// idle right
-
-	//sprites->Add(10002, 275, 154, 290, 181, texMario);		// walk
-	//sprites->Add(10003, 304, 154, 321, 181, texMario);
-
-	//sprites->Add(10011, 186, 154, 200, 181, texMario);		// idle left
-	//sprites->Add(10012, 155, 154, 170, 181, texMario);		// walk
-	//sprites->Add(10013, 125, 154, 140, 181, texMario);
-
-	//sprites->Add(10099, 215, 120, 231, 135, texMario);		// die 
-
-	//// small
-	//sprites->Add(10021, 247, 0, 259, 15, texMario);			// idle small right
-	//sprites->Add(10022, 275, 0, 291, 15, texMario);			// walk 
-	//sprites->Add(10023, 306, 0, 320, 15, texMario);			// 
-
-	//sprites->Add(10031, 187, 0, 198, 15, texMario);			// idle small left
-
-	//sprites->Add(10032, 155, 0, 170, 15, texMario);			// walk
-	//sprites->Add(10033, 125, 0, 139, 15, texMario);			// 
-
-
-	//LPDIRECT3DTEXTURE9 texMisc = textures->Get(ID_TEX_MISC);
-	//sprites->Add(20001, 408, 225, 424, 241, texMisc);
-
-	//LPDIRECT3DTEXTURE9 texEnemy = textures->Get(ID_TEX_ENEMY);
-	//sprites->Add(30001, 5, 14, 21, 29, texEnemy);
-	//sprites->Add(30002, 25, 14, 41, 29, texEnemy);
-
-	//sprites->Add(30003, 45, 21, 61, 29, texEnemy); // die sprite
-
-	//LPANIMATION ani;
-
-	//ani = new CAnimation(100);	// idle big right
-	//ani->Add(10001);
-	//animations->Add(400, ani);
-
-	//ani = new CAnimation(100);	// idle big left
-	//ani->Add(10011);
-	//animations->Add(401, ani);
-
-	//ani = new CAnimation(100);	// idle small right
-	//ani->Add(10021);
-	//animations->Add(402, ani);
-
-	//ani = new CAnimation(100);	// idle small left
-	//ani->Add(10031);
-	//animations->Add(403, ani);
-
-	//ani = new CAnimation(100);	// walk right big
-	//ani->Add(10001);
-	//ani->Add(10002);
-	//ani->Add(10003);
-	//animations->Add(500, ani);
-
-	//ani = new CAnimation(100);	// // walk left big
-	//ani->Add(10011);
-	//ani->Add(10012);
-	//ani->Add(10013);
-	//animations->Add(501, ani);
-
-	//ani = new CAnimation(100);	// walk right small
-	//ani->Add(10021);
-	//ani->Add(10022);
-	//ani->Add(10023);
-	//animations->Add(502, ani);
-
-	//ani = new CAnimation(100);	// walk left small
-	//ani->Add(10031);
-	//ani->Add(10032);
-	//ani->Add(10033);
-	//animations->Add(503, ani);
-
-
-	//ani = new CAnimation(100);		// Mario die
-	//ani->Add(10099);
-	//animations->Add(599, ani);
-
-
-
-	//ani = new CAnimation(100);		// brick
-	//ani->Add(20001);
-	//animations->Add(601, ani);
-
-	//ani = new CAnimation(300);		// Goomba walk
-	//ani->Add(30001);
-	//ani->Add(30002);
-	//animations->Add(701, ani);
-
-	//ani = new CAnimation(1000);		// Goomba dead
-	//ani->Add(30003);
-	//animations->Add(702, ani);
-
-	//mario = new CMario();
-	//mario->AddAnimation(400);		// idle right big
-	//mario->AddAnimation(401);		// idle left big
-	//mario->AddAnimation(402);		// idle right small
-	//mario->AddAnimation(403);		// idle left small
-
-	//mario->AddAnimation(500);		// walk right big
-	//mario->AddAnimation(501);		// walk left big
-	//mario->AddAnimation(502);		// walk right small
-	//mario->AddAnimation(503);		// walk left big
-
-	//mario->AddAnimation(599);		// die
 
 	//mario->SetPosition(50.0f, 0);
 	//objects.push_back(mario);
