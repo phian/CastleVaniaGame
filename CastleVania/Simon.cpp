@@ -127,6 +127,11 @@ void CSimon::Render()
 		if (nx > 0) ani = SIMON_ANI_USE_WHIP_STAND_RIGHT;
 		else ani = SIMON_ANI_USE_WHIP_STAND_LEFT;
 	}
+	else if (GetState() == SIMON_STATE_JUMP)
+	{
+		if (nx > 0) ani = SIMON_ANI_JUMP_RIGHT;
+		else ani = SIMON_ANI_JUMP_LEFT;
+	}
 	else if (vx > 0)
 			ani = SIMON_ANI_WALKING_RIGHT;
 	else ani = SIMON_ANI_WALKING_LEFT;
@@ -161,7 +166,7 @@ void CSimon::SetState(int state)
 			vx = 0;
 			break;
 		case SIMON_STATE_JUMP:
-			if(y > 10)
+			if (y > 120)
 				vy = -SIMON_JUMP_SPEED_Y;
 			break;
 		case SIMON_STATE_USE_WHIP_SIT:

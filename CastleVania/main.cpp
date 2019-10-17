@@ -36,6 +36,8 @@ CGame * game;
 CSimon* Simon;
 CPillarFire* PillarFire;
 
+bool isJumped = false;
+
 //CMario* mario;
 //CGoomba* goomba;
 
@@ -56,15 +58,10 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
-	case DIK_SPACE:
-		//mario->SetState(MARIO_STATE_JUMP);
-		Simon->SetState(SIMON_STATE_JUMP);
-		break;
 	case DIK_D: // reset
 		/*Simon->SetState(SIMON_STATE_IDLE);
 		Simon->SetPosition(50.0f, 0.0f);
 		Simon->SetSpeed(0, 0);*/
-
 		if (Simon->GetState() == SIMON_STATE_SITDOWN) 
 			Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 		break;
@@ -96,6 +93,19 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		Simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN))
 		Simon->SetState(SIMON_STATE_SITDOWN);
+	else if (game->IsKeyDown(DIK_SPACE))
+	{
+		if (isJumped == false)
+		{
+			Simon->SetState(SIMON_STATE_JUMP);
+			isJumped = true;
+		}
+
+		else
+		{
+			isJumped = false;
+		}
+	}
 	else
 		Simon->SetState(SIMON_STATE_IDLE);
 }
@@ -173,6 +183,9 @@ void LoadResources()
 	sprites->Add(10062, 373, 3, 408, 63, texSimon);
 	sprites->Add(10063, 421, 3, 467, 64, texSimon);
 
+	sprites->Add(10070, 194, 215, 229, 263, texSimon); // jump right
+	sprites->Add(10071, 250, 15, 285, 65, texSimon); // jump left
+
 	LPANIMATION ani;
 
 	ani = new CAnimation(100); // idle right
@@ -227,12 +240,17 @@ void LoadResources()
 	ani = new CAnimation(100);  // stand use whip left
 	ani->Add(10060);
 	ani->Add(10061);
-	ani->Add(10052);
+	ani->Add(10062);
 	ani->Add(10063);
 	animations->Add(9, ani);
 
-	ani = new CAnimation(100);
+	ani = new CAnimation(100); // jump right
+	ani->Add(10070);
+	animations->Add(10, ani);
 
+	ani = new CAnimation(100); // jump left
+	ani->Add(10071);
+	animations->Add(11, ani);
 
 	Simon = new CSimon();
 
@@ -250,6 +268,9 @@ void LoadResources()
 
 	Simon->AddAnimation(8); // stand use whip right
 	Simon->AddAnimation(9); // stand use whip left
+
+	Simon->AddAnimation(10); // jump right
+	Simon->AddAnimation(11); // jump left
 
 	Simon->SetPosition(50.0f, 150.0f);
 

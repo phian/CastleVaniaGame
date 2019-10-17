@@ -2,8 +2,8 @@
 
 #include "GameObject.h"
 
-#define BRICK_BBOX_WIDTH  20
-#define BRICK_BBOX_HEIGHT 40
+#define PILLAR_BBOX_WIDTH  20
+#define PILLAR_BBOX_HEIGHT 40
 
 class CPillarFire: public CGameObject
 {
