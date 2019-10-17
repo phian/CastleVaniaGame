@@ -58,7 +58,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	{
 	case DIK_SPACE:
 		//mario->SetState(MARIO_STATE_JUMP);
-		//Simon->SetState(SIMON_STATE_JUMP);
+		Simon->SetState(SIMON_STATE_JUMP);
 		break;
 	case DIK_A: // reset
 		/*mario->SetState(MARIO_STATE_IDLE);
@@ -136,19 +136,19 @@ void LoadResources()
 	CSprites* sprites = CSprites::GetInstance();
 	CAnimations* animations = CAnimations::GetInstance();
 
+	// ----------------------------Simon-------------------------------------//
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
-
-	sprites->Add(10010, 316, 199, 346, 261, texSimon); // walking right
-	sprites->Add(10011, 371, 197, 404, 260, texSimon);
-	sprites->Add(10012, 434, 199, 468, 262, texSimon);
 
 	sprites->Add(10001, 316, 199, 346, 261, texSimon); // idle right
 	sprites->Add(10002, 135, 3, 167, 64, texSimon); // idle left
-	
 
 	sprites->Add(10013, 135, 3, 167, 64, texSimon); // walking left
 	sprites->Add(10014, 77, 0, 106, 63, texSimon);
 	sprites->Add(10015, 11, 3, 45, 63, texSimon);
+
+	sprites->Add(10010, 316, 199, 346, 261, texSimon); // walking right
+	sprites->Add(10011, 371, 197, 404, 260, texSimon);
+	sprites->Add(10012, 434, 199, 468, 262, texSimon);
 
 	sprites->Add(10020, 196, 215, 228, 263, texSimon); // sitdown right
 	sprites->Add(10021, 251, 16, 285, 64, texSimon); // sitdown left
@@ -163,41 +163,47 @@ void LoadResources()
 	ani->Add(10002);
 	animations->Add(1, ani);
 
+	ani = new CAnimation(100); // sitdown right
+	ani->Add(10020);
+	animations->Add(2, ani);
+
+	ani = new CAnimation(100); // sitdown left
+	ani->Add(10021);
+	animations->Add(3, ani);
+
 	ani = new CAnimation(100); // walking right
 	ani->Add(10010);
 	ani->Add(10011);
 	ani->Add(10012);
-	animations->Add(2, ani);
+	animations->Add(4, ani);
 
 	ani = new CAnimation(100); // walking left
 	ani->Add(10013);
 	ani->Add(10014);
 	ani->Add(10015);
-	animations->Add(3, ani);
-
-	ani = new CAnimation(100); // sitdown right
-	ani->Add(10020);
-	animations->Add(4, ani);
-
-	ani = new CAnimation(100); // sitdown left
-	ani->Add(10021);
 	animations->Add(5, ani);
+	
 
 	Simon = new CSimon();
 
 	Simon->AddAnimation(0); // idle right
 	Simon->AddAnimation(1); // idle left
 
-	Simon->AddAnimation(2); // walking right
-	Simon->AddAnimation(3); // walking left
+	Simon->AddAnimation(2); // sitdown right
+	Simon->AddAnimation(3); // sitdown left
 
-	Simon->AddAnimation(4); // sitdown right
-	Simon->AddAnimation(5); // sitdown left
+	Simon->AddAnimation(4); // walking right
+	Simon->AddAnimation(5); // walking left
 
-	Simon->SetPosition(50.0f, 100.0f);
+	Simon->SetPosition(50.0f, 150.0f);
 
-	//objects.push_back(Simon);
+	objects.push_back(Simon);
 
+	// ----------------------------------------------------------------------//
+
+	//--------------------------------Candle---------------------------------//
+
+	// ----------------------------------------------------------------------//
 
 	//LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
 
@@ -375,23 +381,22 @@ void LoadResources()
 */
 void Update(DWORD dt)
 {
-	Simon->Update(dt);
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
 
-	/*vector<LPGAMEOBJECT> coObjects;
+	vector<LPGAMEOBJECT> coObjects;
 	for (int i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
-	}*/
+	}
 
-	/*for (int i = 0; i < objects.size(); i++)
+	for (int i = 0; i < objects.size(); i++)
 	{
 		objects[i]->Update(dt, &coObjects);
-	}*/
+	}
 
 
-	// Update camera to follow mario
+	// Update camera to follow Simon
 	//float cx, cy;
 	//Simon->GetPosition(cx, cy);
 
@@ -417,10 +422,8 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
-		Simon->Render();
-
-		/*for (int i = 0; i < objects.size(); i++)
-			objects[i]->Render();*/
+		for (int i = 0; i < objects.size(); i++)
+			objects[i]->Render();
 
 		spriteHandler->End();
 		d3ddv->EndScene();

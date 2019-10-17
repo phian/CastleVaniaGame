@@ -1,4 +1,2 @@
-﻿  main.cpp
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(32,1): warning C4005:  'ID_TEX_BBOX': macro redefinition
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\GameObject.h(12): message :  see previous definition of 'ID_TEX_BBOX'
+﻿  Simon.cpp
   CastleVania.vcxproj -> D:\source\Nhập môn phát triển game\CastleVaniaGame\Debug\CastleVania.exe

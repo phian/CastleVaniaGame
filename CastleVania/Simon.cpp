@@ -12,11 +12,16 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt);
 
 	// Simple fall down
-	//vy += SIMON_GRAVITY * dt;
+	vy += SIMON_GRAVITY * dt;
 
-	//vy += SIMON_GRAVITY;
+	if (y > 150)
+	{
+		vy = 0; 
+		y = 150.0f;
+	}
 
 	x += dx;
+	y += dy;
 	
 	// simple screen edge collision!!!
 	if (vx > 0 && x > 500) x = 500;
@@ -145,15 +150,18 @@ void CSimon::SetState(int state)
 		case SIMON_STATE_SITDOWN:
 			vx = 0;
 			break;
+		case SIMON_STATE_JUMP:
+			if(y > 0)
+				vy = -SIMON_JUMP_SPEED_Y;
+			break;
 	}
-
 }
 
 void CSimon::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	/*left = x;
+	left = x;
 	top = y;
 	
 	right = x + SIMON_BBOX_WIDTH;
-	bottom = y + SIMOB_BBOX_HEIGHT;*/
+	bottom = y + SIMOB_BBOX_HEIGHT;
 }
