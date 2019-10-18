@@ -19,7 +19,7 @@
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 255, 200)
 #define SCREEN_WIDTH 600
-#define SCREEN_HEIGHT 320
+#define SCREEN_HEIGHT 480
 
 #define MAX_FRAME_RATE 120
 
@@ -96,8 +96,8 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		Simon->SetState(SIMON_STATE_JUMP);
 	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D))
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
-	else if (game->IsKeyDown(DIK_S))
-		 Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+	else if (game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
+		Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	else
 		Simon->SetState(SIMON_STATE_IDLE);
 }
@@ -130,13 +130,38 @@ void LoadResources()
 	textures->Add(ID_TEX_ENEMY, L"textures\\enemies.png", D3DCOLOR_XRGB(3, 26, 110));*/
 
 	textures->Add(ID_TEX_SIMON, L"Textures\\simon.png", D3DCOLOR_XRGB(255, 0, 255));
-
+	textures->Add(ID_TEX_PILLARFIRE, L"Textures\\Candle.png", D3DCOLOR_XRGB(255, 0, 255));
 
 	//textures->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 
 	CSprites* sprites = CSprites::GetInstance();
 	CAnimations* animations = CAnimations::GetInstance();
+
+	LPANIMATION ani;
+
+	//--------------------------------Candle---------------------------------//
+	LPDIRECT3DTEXTURE9 texCandle = textures->Get(ID_TEX_PILLARFIRE);
+
+	sprites->Add(10001, 1, 1, 32, 63, texCandle);
+	sprites->Add(10002, 33, 1, 64, 63, texCandle);
+
+	ani = new CAnimation(100);
+	ani->Add(10001);
+	ani->Add(10002);
+	animations->Add(0, ani);
+
+	for (int i = 0; i < 3; i++)
+	{
+		PillarFire = new CPillarFire();
+
+		PillarFire->AddAnimation(0);
+		PillarFire->SetPosition(150.0f + i * 300, 250.0f);
+
+		objects.push_back(PillarFire);
+	}
+	
+	// ----------------------------------------------------------------------//
 
 	// ----------------------------Simon-------------------------------------//
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
@@ -177,8 +202,7 @@ void LoadResources()
 
 	sprites->Add(10070, 194, 215, 229, 263, texSimon); // jump right
 	sprites->Add(10071, 250, 15, 285, 65, texSimon); // jump left
-
-	LPANIMATION ani;
+	
 
 	ani = new CAnimation(100); // idle right
 	ani->Add(10001);
@@ -264,15 +288,12 @@ void LoadResources()
 	Simon->AddAnimation(10); // jump right
 	Simon->AddAnimation(11); // jump left
 
-	Simon->SetPosition(50.0f, 150.0f);
+	Simon->SetPosition(50.0f, 250.0f);
 
 	objects.push_back(Simon);
 
 	// ----------------------------------------------------------------------//
 
-	//--------------------------------Candle---------------------------------//
-
-	// ----------------------------------------------------------------------//
 
 	//LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
 
@@ -360,13 +381,16 @@ void Update(DWORD dt)
 
 
 	// Update camera to follow Simon
-	//float cx, cy;
-	//Simon->GetPosition(cx, cy);
+	float cx, cy;
+	Simon->GetPosition(cx, cy);
 
-	//cx -= SCREEN_WIDTH / 2;
-	//cy -= SCREEN_HEIGHT / 2;
+	/*cx -= SCREEN_WIDTH / 2;
+	cy -= SCREEN_HEIGHT / 2;*/
 
-	//CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	cx -= SCREEN_WIDTH - 500;
+	cy -= SCREEN_HEIGHT - 500;
+
+	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 }
 
 /*

@@ -14,18 +14,18 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += SIMON_GRAVITY * dt;
 
-	if (y > 150)
+	if (y > 250)
 	{
 		vy = 0; 
-		y = 150.0f;
+		y = 250.0f;
 	}
 
 	x += dx;
 	y += dy;
 	
 	// simple screen edge collision!!!
-	if (vx > 0 && x > 500) x = 500;
-	if (vx < 0 && x < 0) x = 0;
+	/*if (vx > 0 && x > 480 - 50) x = 480 - 50;*/
+	if (vx < 0 && x < -0) x = 0;
 
 	/*vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -166,7 +166,7 @@ void CSimon::SetState(int state)
 			vx = 0;
 			break;
 		case SIMON_STATE_JUMP:
-			if (y > 120)
+			if (y > 230)
 				vy = -SIMON_JUMP_SPEED_Y;
 			break;
 		case SIMON_STATE_USE_WHIP_SIT:
