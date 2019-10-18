@@ -36,8 +36,6 @@ CGame * game;
 CSimon* Simon;
 CPillarFire* PillarFire;
 
-bool isJumped = false;
-
 //CMario* mario;
 //CGoomba* goomba;
 
@@ -58,17 +56,18 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 
 	switch (KeyCode)
 	{
-	case DIK_D: // reset
-		/*Simon->SetState(SIMON_STATE_IDLE);
-		Simon->SetPosition(50.0f, 0.0f);
-		Simon->SetSpeed(0, 0);*/
-		if (Simon->GetState() == SIMON_STATE_SITDOWN) 
-			Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
-		break;
-	case DIK_S:
-		if (Simon->GetState() == SIMON_STATE_IDLE) Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
-		break;
+	//case DIK_D: // reset
+	//	/*Simon->SetState(SIMON_STATE_IDLE);
+	//	Simon->SetPosition(50.0f, 0.0f);
+	//	Simon->SetSpeed(0, 0);*/
+	//	if (Simon->GetState() == SIMON_STATE_SITDOWN) 
+	//		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
+	//	break;
+	//case DIK_S:
+	//	if (Simon->GetState() == SIMON_STATE_IDLE) Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+	//	break;
 	}
+
 }
 
 void CSampleKeyHander::OnKeyUp(int KeyCode)
@@ -87,25 +86,18 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else
 		mario->SetState(MARIO_STATE_IDLE);*/
 
-	if (game->IsKeyDown(DIK_RIGHT))
+	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE))
 		Simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT))
+	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE))
 		Simon->SetState(SIMON_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_DOWN))
+	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D))
 		Simon->SetState(SIMON_STATE_SITDOWN);
-	else if (game->IsKeyDown(DIK_SPACE))
-	{
-		if (isJumped == false)
-		{
-			Simon->SetState(SIMON_STATE_JUMP);
-			isJumped = true;
-		}
-
-		else
-		{
-			isJumped = false;
-		}
-	}
+	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
+		Simon->SetState(SIMON_STATE_JUMP);
+	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D))
+		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
+	else if (game->IsKeyDown(DIK_S))
+		 Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	else
 		Simon->SetState(SIMON_STATE_IDLE);
 }
@@ -168,7 +160,7 @@ void LoadResources()
 	sprites->Add(10032, 432, 333, 470, 394, texSimon); 
 	sprites->Add(10033, 373, 332, 420, 393, texSimon);
 	 
-	sprites->Add(10040, 135, 3, 167, 64, texSimon); // sit use whip left
+	sprites->Add(10040, 249, 2, 285, 64, texSimon); // sit use whip left
 	sprites->Add(10041, 428, 66, 479, 131, texSimon); 
 	sprites->Add(10042, 10, 133, 43, 195, texSimon); 
 	sprites->Add(10043, 61, 133, 106, 197, texSimon);
@@ -495,11 +487,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hWnd = CreateGameWindow(hInstance, nCmdShow, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	game = CGame::GetInstance();
+
 	game->Init(hWnd);
 
 	keyHandler = new CSampleKeyHander();
 	game->InitKeyboard(keyHandler);
-
 
 	LoadResources();
 
