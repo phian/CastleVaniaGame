@@ -13,13 +13,14 @@
 
 #include "Simon.h"
 #include "PillarOfFire.h"
+#include "Scene.h"
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Castle Vania"
 
 #define BACKGROUND_COLOR D3DCOLOR_XRGB(255, 255, 200)
-#define SCREEN_WIDTH 600
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 500
+#define SCREEN_HEIGHT 380
 
 #define MAX_FRAME_RATE 120
 
@@ -30,11 +31,13 @@
 #define ID_TEX_SIMON	  0
 #define ID_TEX_PILLARFIRE 10
 #define ID_TEX_BBOX		  20
+#define ID_TEX_SCENE	  30
 
 CGame * game;
 
 CSimon* Simon;
 CPillarFire* PillarFire;
+CScene* Scene;
 
 //CMario* mario;
 //CGoomba* goomba;
@@ -67,7 +70,6 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	//	if (Simon->GetState() == SIMON_STATE_IDLE) Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	//	break;
 	}
-
 }
 
 void CSampleKeyHander::OnKeyUp(int KeyCode)
@@ -91,15 +93,31 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE))
 		Simon->SetState(SIMON_STATE_WALKING_LEFT);
 	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D))
+	{
+		if (game->IsKeyDown(DIK_RIGHT))
+		{
+			Simon->SetState(SIMON_STATE_SITDOWN_RIGHT);
+
+			return;
+		}
+		if (game->IsKeyDown(DIK_LEFT))
+		{
+			Simon->SetState(SIMON_STATE_SITDOWN_LEFT);
+
+			return;
+		}
+		
 		Simon->SetState(SIMON_STATE_SITDOWN);
+	}
 	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 		Simon->SetState(SIMON_STATE_JUMP);
-	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 	else if (game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 		Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	else
-		Simon->SetState(SIMON_STATE_IDLE);
+		if(Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
+			Simon->SetState(SIMON_STATE_IDLE);
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -131,6 +149,7 @@ void LoadResources()
 
 	textures->Add(ID_TEX_SIMON, L"Textures\\simon.png", D3DCOLOR_XRGB(255, 0, 255));
 	textures->Add(ID_TEX_PILLARFIRE, L"Textures\\Candle.png", D3DCOLOR_XRGB(255, 0, 255));
+	textures->Add(ID_TEX_SCENE, L"Textures\\CastlevaniaMapLevel01a(1).png", D3DCOLOR_XRGB(164, 0, 0));
 
 	//textures->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
@@ -139,6 +158,24 @@ void LoadResources()
 	CAnimations* animations = CAnimations::GetInstance();
 
 	LPANIMATION ani;
+
+	//--------------------------------Scene---------------------------------//
+	LPDIRECT3DTEXTURE9 texScene = textures->Get(ID_TEX_SCENE);
+
+	sprites->Add(10001, 1, 1, 1465, 339, texScene);
+
+	ani = new CAnimation(100);
+	ani->Add(10001);
+	animations->Add(0, ani);
+
+	Scene = new CScene();
+
+	Scene->AddAnimation(0);
+	Scene->SetPosition(0.0f, 0.0f);
+
+	objects.push_back(Scene);
+
+	// ----------------------------------------------------------------------//
 
 	//--------------------------------Candle---------------------------------//
 	LPDIRECT3DTEXTURE9 texCandle = textures->Get(ID_TEX_PILLARFIRE);
@@ -151,17 +188,17 @@ void LoadResources()
 	ani->Add(10002);
 	animations->Add(0, ani);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		PillarFire = new CPillarFire();
 
 		PillarFire->AddAnimation(0);
-		PillarFire->SetPosition(150.0f + i * 300, 250.0f);
+		PillarFire->SetPosition(177.0f + i * 240, 245.0f);
 
 		objects.push_back(PillarFire);
 	}
 	
-	// ----------------------------------------------------------------------//
+	//-----------------------------------------------------------------------//
 
 	// ----------------------------Simon-------------------------------------//
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
@@ -288,7 +325,7 @@ void LoadResources()
 	Simon->AddAnimation(10); // jump right
 	Simon->AddAnimation(11); // jump left
 
-	Simon->SetPosition(50.0f, 250.0f);
+	Simon->SetPosition(80.0f, 245.0f);
 
 	objects.push_back(Simon);
 
@@ -387,10 +424,13 @@ void Update(DWORD dt)
 	/*cx -= SCREEN_WIDTH / 2;
 	cy -= SCREEN_HEIGHT / 2;*/
 
-	cx -= SCREEN_WIDTH - 500;
-	cy -= SCREEN_HEIGHT - 500;
-
-	CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	if (cx <= 1065 && cx > 100) // check position to stop camera
+	{
+		cx -= SCREEN_WIDTH - 400;
+		cy -= SCREEN_HEIGHT - 400;
+	
+		CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
+	}
 }
 
 /*

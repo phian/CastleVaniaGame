@@ -14,18 +14,23 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += SIMON_GRAVITY * dt;
 
-	if (y > 250)
+	if (y > 245)
 	{
 		vy = 0; 
-		y = 250.0f;
+		y = 245.0f;
+	}
+
+	if (GetState() == SIMON_STATE_JUMP && vy == 0) // Reset state after jump
+	{
+		SetState(SIMON_STATE_IDLE);
 	}
 
 	x += dx;
 	y += dy;
 	
 	// simple screen edge collision!!!
-	/*if (vx > 0 && x > 480 - 50) x = 480 - 50;*/
-	if (vx < 0 && x < -0) x = 0;
+	if (vx > 0 && x > 1465 - 50) x = 1415;
+	if (vx < 0 && x < 0) x = 0;
 
 	/*vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -112,15 +117,26 @@ void CSimon::Render()
 		if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
 		else ani = SIMON_ANI_IDLE_LEFT;
 	}
-	else if (vx == 0 && GetState() == SIMON_STATE_SITDOWN)
+	else if (vx == 0 && GetState() == SIMON_STATE_SITDOWN_RIGHT)
 	{
-		if (nx > 0) ani = SIMON_ANI_SITDOWN_RIGHT;
-		else ani = SIMON_ANI_SITDOWN_LEFT;
+		ani = SIMON_ANI_SITDOWN_RIGHT;
+		nx = 1;
+	}
+	else if (vx == 0 && GetState() == SIMON_STATE_SITDOWN_LEFT)
+	{
+		ani = SIMON_ANI_SITDOWN_LEFT;
+		nx = -1;
 	}
 	else if (vx == 0 && GetState() == SIMON_STATE_USE_WHIP_SIT)
 	{
 		if (nx > 0) ani = SIMON_ANI_USE_WHIP_SIT_RIGHT;
 		else ani = SIMON_ANI_USE_WHIP_SIT_LEFT;
+	}
+		
+	else if (vx == 0 && GetState() == SIMON_STATE_SITDOWN)
+	{
+		if (nx > 0) ani = SIMON_ANI_SITDOWN_RIGHT;
+		else ani = SIMON_ANI_SITDOWN_LEFT;
 	}
 	else if (vx == 0 && GetState() == SIMON_STATE_USE_WHIP_STAND)
 	{
@@ -162,14 +178,20 @@ void CSimon::SetState(int state)
 		case SIMON_STATE_IDLE:
 			vx = 0;
 			break;
-		case SIMON_STATE_SITDOWN:
+		case SIMON_STATE_SITDOWN_RIGHT:
+			vx = 0;
+			break;
+		case SIMON_STATE_SITDOWN_LEFT:
 			vx = 0;
 			break;
 		case SIMON_STATE_JUMP:
-			if (y > 230)
+			if (y > 220)
 				vy = -SIMON_JUMP_SPEED_Y;
 			break;
 		case SIMON_STATE_USE_WHIP_SIT:
+			vx = 0;
+			break;
+		case SIMON_STATE_SITDOWN:
 			vx = 0;
 			break;
 		case SIMON_STATE_USE_WHIP_STAND:
