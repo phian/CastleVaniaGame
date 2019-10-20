@@ -51,6 +51,8 @@ int Count = 0; // increase animation id
 //CMario* mario;
 //CGoomba* goomba;
 
+bool isJumped = false;
+
 vector<LPGAMEOBJECT> objects;
 
 class CSampleKeyHander : public CKeyEventHandler
@@ -75,9 +77,14 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	//	if (Simon->GetState() == SIMON_STATE_SITDOWN) 
 	//		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 	//	break;
-	//case DIK_S:
-	//	if (Simon->GetState() == SIMON_STATE_IDLE) Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
-	//	break;
+	/*case DIK_S:
+		if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT) 
+			Simon->SetSpeed(0, 0);
+			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+		break;*/
+	case DIK_SPACE:
+		if (isJumped == true) isJumped = false;
+		else isJumped = true;
 	}
 }
 
@@ -97,10 +104,37 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else
 		mario->SetState(MARIO_STATE_IDLE);*/
 
-	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && Simon->GetState() != SIMON_STATE_JUMP)
-		Simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && Simon->GetState() != SIMON_STATE_JUMP)
-		Simon->SetState(SIMON_STATE_WALKING_LEFT);
+	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	{
+		if (Simon->vy == 0)
+			Simon->SetState(SIMON_STATE_WALKING_RIGHT);
+	}
+	else if (game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	{
+		if (Simon->GetState() == SIMON_STATE_JUMP) // Simon jump one time (jump again when simon is idle)
+		{
+			return;
+		}
+		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
+		if(Simon->y >= 225)
+			Simon->SetSpeed(SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
+	}
+	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	{
+		if (Simon->vy == 0)
+			Simon->SetState(SIMON_STATE_WALKING_LEFT);
+	}
+	else if (game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	{
+		if (Simon->GetState() == SIMON_STATE_JUMP)
+		{
+			return;
+		}
+		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
+		if (Simon->y >= 225) Simon->SetSpeed(-SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
+	}
 	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D) && Simon->GetState() != SIMON_STATE_JUMP) // if Simon is jumping -> disable DIK_DOWN
 	{
 		if (game->IsKeyDown(DIK_RIGHT))
@@ -118,21 +152,26 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
-		if (game->IsKeyDown(DIK_RIGHT))
-			Simon->SetState(SIMON_STATE_JUMP_RIGHT);
-		else if (game->IsKeyDown(DIK_LEFT))
-			Simon->SetState(SIMON_STATE_JUMP_LEFT);
-		else
+		if (Simon->GetState() == SIMON_STATE_JUMP)
+		{
+			return;
+		}
+		else if (Simon->GetState() != SIMON_STATE_JUMP) // jump again when simon is idle
 			Simon->SetState(SIMON_STATE_JUMP);
 	}
 	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
-	else if (game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
-		Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+	else if (game->IsKeyDown(DIK_S))
+	{
+		if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT)
+		{
+			Simon->SetSpeed(0, 0);
+			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+		}
+	}
 	else
 		if(Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
 			Simon->SetState(SIMON_STATE_IDLE);
-
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -607,10 +646,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetWindowPos(hWnd, 0, 0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	wchar_t buffer[256];
+	/*wchar_t buffer[256];
 	wsprintfW(buffer, L"%d", temp);
 
-	MessageBox(hWnd, buffer, L"Show", MB_OK);
+	MessageBox(hWnd, buffer, L"Show", MB_OK);*/
 
 	Run();
 

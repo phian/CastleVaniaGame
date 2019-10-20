@@ -112,6 +112,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CSimon::Render()
 {
 	int ani;
+
 	if (vx == 0 && GetState() == SIMON_STATE_IDLE)
 	{
 		if (nx > 0) ani = SIMON_ANI_IDLE_RIGHT;
@@ -132,7 +133,6 @@ void CSimon::Render()
 		if (nx > 0) ani = SIMON_ANI_USE_WHIP_SIT_RIGHT;
 		else ani = SIMON_ANI_USE_WHIP_SIT_LEFT;
 	}
-
 	else if (vx == 0 && GetState() == SIMON_STATE_SITDOWN)
 	{
 		if (nx > 0) ani = SIMON_ANI_SITDOWN_RIGHT;
@@ -148,12 +148,8 @@ void CSimon::Render()
 		if (nx > 0) ani = SIMON_ANI_JUMP_RIGHT;
 		else ani = SIMON_ANI_JUMP_LEFT;
 	}
-	else if (GetState() == SIMON_STATE_JUMP_RIGHT)
-		ani = SIMON_ANI_JUMP_RIGHT;
-	else if (GetState() == SIMON_STATE_JUMP_LEFT)
-		ani = SIMON_ANI_JUMP_LEFT;
 	else if (vx > 0)
-			ani = SIMON_ANI_WALKING_RIGHT;
+		ani = SIMON_ANI_WALKING_RIGHT;
 	else ani = SIMON_ANI_WALKING_LEFT;
 
 	animations[ani]->Render(x, y);
@@ -194,18 +190,6 @@ void CSimon::SetState(int state)
 			if (y >= 225)
 				vy = -SIMON_JUMP_SPEED_Y;
 			break;
-		case SIMON_STATE_JUMP_RIGHT:
-			if (y >= 225)
-			{
-				vx = SIMON_WALKING_SPEED;
-				vy = -SIMON_JUMP_SPEED_Y;
-			}
-		case SIMON_STATE_JUMP_LEFT:
-			if (y >= 225)
-			{
-				vx = -SIMON_WALKING_SPEED;
-				vy = -SIMON_JUMP_SPEED_Y;
-			}
 		case SIMON_STATE_USE_WHIP_SIT:
 			vx = 0;
 			vy = 0;
