@@ -42,6 +42,7 @@
   <ItemGroup>
     <Text Include="TexturesData\BackgroundSprites.txt" />
     <Text Include="TexturesData\CandleSprites.txt" />
+    <Text Include="TexturesData\KnifeSprites.txt" />
     <Text Include="TexturesData\SimonSprites.txt" />
     <Text Include="TexturesData\TexturesPath.txt" />
   </ItemGroup>

@@ -81,5 +81,8 @@
     <Text Include="TexturesData\BackgroundSprites.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="TexturesData\KnifeSprites.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

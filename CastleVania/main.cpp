@@ -51,8 +51,6 @@ int Count = 0; // increase animation id
 //CMario* mario;
 //CGoomba* goomba;
 
-bool isJumped = false;
-
 vector<LPGAMEOBJECT> objects;
 
 class CSampleKeyHander : public CKeyEventHandler
@@ -82,9 +80,6 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			Simon->SetSpeed(0, 0);
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 		break;*/
-	case DIK_SPACE:
-		if (isJumped == true) isJumped = false;
-		else isJumped = true;
 	}
 }
 
@@ -111,13 +106,12 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
+		
 		if (Simon->GetState() == SIMON_STATE_JUMP) // Simon jump one time (jump again when simon is idle)
-		{
 			return;
-		}
-		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+		if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
-		if(Simon->y >= 225)
+		if (Simon->y >= 225)
 			Simon->SetSpeed(SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
 	}
 	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
@@ -128,10 +122,8 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP)
-		{
 			return;
-		}
-		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+		if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
 		if (Simon->y >= 225) Simon->SetSpeed(-SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
 	}
@@ -153,9 +145,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP)
-		{
 			return;
-		}
 		else if (Simon->GetState() != SIMON_STATE_JUMP) // jump again when simon is idle
 			Simon->SetState(SIMON_STATE_JUMP);
 	}
@@ -168,6 +158,8 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			Simon->SetSpeed(0, 0);
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 		}
+		else if(Simon->GetState() == SIMON_STATE_IDLE)
+			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	}
 	else
 		if(Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
@@ -241,6 +233,11 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+	}
+
+	else if (id == 4)
+	{
+
 	}
 
 	return data;
