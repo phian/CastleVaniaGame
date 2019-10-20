@@ -1,6 +1,10 @@
 #include <windows.h>
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iterator>
 
 #include "debug.h"
 #include "Game.h"
@@ -14,6 +18,8 @@
 #include "Simon.h"
 #include "PillarOfFire.h"
 #include "Scene.h"
+
+using namespace std;
 
 #define WINDOW_CLASS_NAME L"SampleWindow"
 #define MAIN_WINDOW_TITLE L"Castle Vania"
@@ -38,6 +44,9 @@ CGame * game;
 CSimon* Simon;
 CPillarFire* PillarFire;
 CScene* Scene;
+
+vector<string> result; // save data read from txt file
+int Count = 0; // increase animation id 
 
 //CMario* mario;
 //CGoomba* goomba;
@@ -88,29 +97,34 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else
 		mario->SetState(MARIO_STATE_IDLE);*/
 
-	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE))
+	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && Simon->GetState() != SIMON_STATE_JUMP)
 		Simon->SetState(SIMON_STATE_WALKING_RIGHT);
-	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE))
+	else if (game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && Simon->GetState() != SIMON_STATE_JUMP)
 		Simon->SetState(SIMON_STATE_WALKING_LEFT);
-	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D) && Simon->GetState() != SIMON_STATE_JUMP) // if Simon is jumping -> disable DIK_DOWN
 	{
 		if (game->IsKeyDown(DIK_RIGHT))
 		{
 			Simon->SetState(SIMON_STATE_SITDOWN_RIGHT);
-
 			return;
 		}
 		if (game->IsKeyDown(DIK_LEFT))
 		{
 			Simon->SetState(SIMON_STATE_SITDOWN_LEFT);
-
 			return;
 		}
-		
-		Simon->SetState(SIMON_STATE_SITDOWN);
+		else
+			Simon->SetState(SIMON_STATE_SITDOWN);
 	}
-	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
-		Simon->SetState(SIMON_STATE_JUMP);
+	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	{
+		if (game->IsKeyDown(DIK_RIGHT))
+			Simon->SetState(SIMON_STATE_JUMP_RIGHT);
+		else if (game->IsKeyDown(DIK_LEFT))
+			Simon->SetState(SIMON_STATE_JUMP_LEFT);
+		else
+			Simon->SetState(SIMON_STATE_JUMP);
+	}
 	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 	else if (game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
@@ -118,6 +132,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	else
 		if(Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
 			Simon->SetState(SIMON_STATE_IDLE);
+
 }
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -133,6 +148,66 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+vector<string> ReadFile(int id)
+{
+	fstream outputFile;
+	vector<string> data;
+	string line;
+
+	if (id == 0)
+	{
+		outputFile.open("TexturesData\\TexturesPath.txt", ios::in);
+
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
+
+		outputFile.close();
+	}
+
+	else if (id == 1)
+	{
+		outputFile.open("TexturesData\\SimonSprites.txt", ios::in);
+
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
+	}
+
+	else if (id == 2)
+	{
+		outputFile.open("TexturesData\\CandleSprites.txt", ios::in);
+
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
+	}
+
+	else if (id == 3)
+	{
+		outputFile.open("TexturesData\\BackgroundSprites.txt", ios::in);
+
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
+	}
+
+	return data;
+}
+
+int temp;
 /*
 	Load all game resources
 	In this example: load textures, sprites, animations and mario object
@@ -143,13 +218,19 @@ void LoadResources()
 {
 	CTextures* textures = CTextures::GetInstance();
 
-	/*textures->Add(ID_TEX_MARIO, L"textures\\mario.png", D3DCOLOR_XRGB(255, 255, 255));
-	textures->Add(ID_TEX_MISC, L"textures\\misc.png", D3DCOLOR_XRGB(176, 224, 248));
-	textures->Add(ID_TEX_ENEMY, L"textures\\enemies.png", D3DCOLOR_XRGB(3, 26, 110));*/
+	result = ReadFile(0);
 
-	textures->Add(ID_TEX_SIMON, L"Textures\\simon.png", D3DCOLOR_XRGB(255, 0, 255));
-	textures->Add(ID_TEX_PILLARFIRE, L"Textures\\Candle.png", D3DCOLOR_XRGB(255, 0, 255));
-	textures->Add(ID_TEX_SCENE, L"Textures\\CastlevaniaMapLevel01a(1).png", D3DCOLOR_XRGB(164, 0, 0));
+	wstring stemp = wstring(result[0].begin(), result[0].end());
+	LPCWSTR path = stemp.c_str();
+	textures->Add(ID_TEX_SIMON, path, D3DCOLOR_XRGB(255, 0, 255));
+
+	stemp = wstring(result[1].begin(), result[1].end());
+	path = stemp.c_str();
+	textures->Add(ID_TEX_PILLARFIRE, path, D3DCOLOR_XRGB(255, 0, 255));
+
+	stemp = wstring(result[2].begin(), result[2].end());
+	path = stemp.c_str();
+	textures->Add(ID_TEX_SCENE, path, D3DCOLOR_XRGB(164, 0, 0));
 
 	//textures->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
@@ -162,181 +243,146 @@ void LoadResources()
 	//--------------------------------Scene---------------------------------//
 	LPDIRECT3DTEXTURE9 texScene = textures->Get(ID_TEX_SCENE);
 
-	sprites->Add(10001, 1, 1, 1465, 339, texScene);
+	result = ReadFile(3);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+		if (data.size() > 0)
+			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texScene);
+	}
 
 	ani = new CAnimation(100);
-	ani->Add(10001);
-	animations->Add(0, ani);
 
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if(data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else if (data.size() == 0)
+		{
+			animations->Add(Count, ani);
+			temp = Count;
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
+	
 	Scene = new CScene();
+	
+	for (int i = 0; i <= Count; i++)
+	{
+		Scene->AddAnimation(i);
+	}
 
-	Scene->AddAnimation(0);
 	Scene->SetPosition(0.0f, 0.0f);
 
 	objects.push_back(Scene);
+
+	Count = 0; // Reset to count for next sprite
 
 	// ----------------------------------------------------------------------//
 
 	//--------------------------------Candle---------------------------------//
 	LPDIRECT3DTEXTURE9 texCandle = textures->Get(ID_TEX_PILLARFIRE);
 
-	sprites->Add(10001, 1, 1, 32, 63, texCandle);
-	sprites->Add(10002, 33, 1, 64, 63, texCandle);
+	result = ReadFile(2);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+		if (data.size() > 0)
+			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texCandle);
+	}
 
 	ani = new CAnimation(100);
-	ani->Add(10001);
-	ani->Add(10002);
-	animations->Add(0, ani);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else if (data.size() == 0)
+		{
+			animations->Add(Count, ani);
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
 
 	for (int i = 0; i < 5; i++)
 	{
 		PillarFire = new CPillarFire();
 
-		PillarFire->AddAnimation(0);
+		for (int j = 0; j <= Count; j++)
+		{
+			PillarFire->AddAnimation(j);
+		}
+
 		PillarFire->SetPosition(177.0f + i * 240, 245.0f);
 
 		objects.push_back(PillarFire);
 	}
+
+	Count = 0; // Reset to count for next sprite
 	
 	//-----------------------------------------------------------------------//
 
 	// ----------------------------Simon-------------------------------------//
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
 
-	sprites->Add(10001, 316, 199, 346, 261, texSimon); // idle right
-	sprites->Add(10002, 135, 3, 167, 64, texSimon); // idle left
+	result = ReadFile(1);
 
-	sprites->Add(10013, 135, 3, 167, 64, texSimon); // walking left
-	sprites->Add(10014, 77, 0, 106, 63, texSimon);
-	sprites->Add(10015, 11, 3, 45, 63, texSimon);
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> position{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+		if (position.size() > 0)
+			sprites->Add(stoi(position[0]), stoi(position[1]), stoi(position[2]), stoi(position[3]), stoi(position[4]), texSimon);
+	}
 
-	sprites->Add(10010, 316, 199, 346, 261, texSimon); // walking right
-	sprites->Add(10011, 371, 197, 404, 260, texSimon);
-	sprites->Add(10012, 434, 199, 468, 262, texSimon);
-	 
-	sprites->Add(10020, 195, 202, 228, 263, texSimon); // sitdown right
-	sprites->Add(10021, 249, 2, 285, 64, texSimon); // sitdown left
+	ani = new CAnimation(100);
 
-	sprites->Add(10030, 195, 202, 228, 263, texSimon); // sit use whip right
-	sprites->Add(10031, 0, 265, 49, 329, texSimon); 
-	sprites->Add(10032, 432, 333, 470, 394, texSimon); 
-	sprites->Add(10033, 373, 332, 420, 393, texSimon);
-	 
-	sprites->Add(10040, 249, 2, 285, 64, texSimon); // sit use whip left
-	sprites->Add(10041, 428, 66, 479, 131, texSimon); 
-	sprites->Add(10042, 10, 133, 43, 195, texSimon); 
-	sprites->Add(10043, 61, 133, 106, 197, texSimon);
-
-	sprites->Add(10050, 316, 199, 346, 261, texSimon); // stand use whip right
-	sprites->Add(10051, 119, 201, 169, 263, texSimon);
-	sprites->Add(10052, 74, 200, 107, 262, texSimon);
-	sprites->Add(10053, 15, 202, 61, 262, texSimon);
-
-	sprites->Add(10060, 135, 3, 167, 64, texSimon); // stand use whip left
-	sprites->Add(10061, 310, 3, 360, 64, texSimon);
-	sprites->Add(10062, 373, 3, 408, 63, texSimon);
-	sprites->Add(10063, 421, 3, 467, 64, texSimon);
-
-	sprites->Add(10070, 194, 215, 229, 263, texSimon); // jump right
-	sprites->Add(10071, 250, 15, 285, 65, texSimon); // jump left
-	
-
-	ani = new CAnimation(100); // idle right
-	ani->Add(10001);
-	animations->Add(0, ani);
-
-	ani = new CAnimation(100); // idle left
-	ani->Add(10002);
-	animations->Add(1, ani);
-
-	ani = new CAnimation(100); // sitdown right
-	ani->Add(10020);
-	animations->Add(2, ani);
-
-	ani = new CAnimation(100); // sitdown left
-	ani->Add(10021);
-	animations->Add(3, ani);
-
-	ani = new CAnimation(100); // walking right
-	ani->Add(10010);
-	ani->Add(10011);
-	ani->Add(10012);
-	animations->Add(4, ani);
-
-	ani = new CAnimation(100); // walking left
-	ani->Add(10013);
-	ani->Add(10014);
-	ani->Add(10015);
-	animations->Add(5, ani);
-
-	ani = new CAnimation(100); // sit use whip right
-	ani->Add(10030);
-	ani->Add(10031);
-	ani->Add(10032);
-	ani->Add(10033);
-	animations->Add(6, ani);
-
-	ani = new CAnimation(100); // sit use whip left
-	ani->Add(10040);
-	ani->Add(10041);
-	ani->Add(10042);
-	ani->Add(10043);
-	animations->Add(7, ani);
-
-	ani = new CAnimation(100);  // stand use whip right
-	ani->Add(10050);
-	ani->Add(10051);
-	ani->Add(10052);
-	ani->Add(10053);
-	animations->Add(8, ani);
-
-	ani = new CAnimation(100);  // stand use whip left
-	ani->Add(10060);
-	ani->Add(10061);
-	ani->Add(10062);
-	ani->Add(10063);
-	animations->Add(9, ani);
-
-	ani = new CAnimation(100); // jump right
-	ani->Add(10070);
-	animations->Add(10, ani);
-
-	ani = new CAnimation(100); // jump left
-	ani->Add(10071);
-	animations->Add(11, ani);
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+		if (data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else if(data.size() == 0)
+		{
+			animations->Add(Count, ani);
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
 
 	Simon = new CSimon();
 
-	Simon->AddAnimation(0); // idle right
-	Simon->AddAnimation(1); // idle left
-
-	Simon->AddAnimation(2); // sitdown right
-	Simon->AddAnimation(3); // sitdown left
-
-	Simon->AddAnimation(4); // walking right
-	Simon->AddAnimation(5); // walking left
-
-	Simon->AddAnimation(6); // sit use whip right
-	Simon->AddAnimation(7); // sit use whip left
-
-	Simon->AddAnimation(8); // stand use whip right
-	Simon->AddAnimation(9); // stand use whip left
-
-	Simon->AddAnimation(10); // jump right
-	Simon->AddAnimation(11); // jump left
+	for (int i = 0; i <= Count; i++)
+	{
+		Simon->AddAnimation(i);
+	}
 
 	Simon->SetPosition(80.0f, 245.0f);
 
 	objects.push_back(Simon);
 
+	Count = 0; // Reset to count for next sprite
+
 	// ----------------------------------------------------------------------//
-
-
-	//LPDIRECT3DTEXTURE9 texMario = textures->Get(ID_TEX_MARIO);
-
-
-	//mario->SetPosition(50.0f, 0);
-	//objects.push_back(mario);
 
 	//for (int i = 0; i < 5; i++)
 	//{
@@ -560,6 +606,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	LoadResources();
 
 	SetWindowPos(hWnd, 0, 0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+
+	wchar_t buffer[256];
+	wsprintfW(buffer, L"%d", temp);
+
+	MessageBox(hWnd, buffer, L"Show", MB_OK);
 
 	Run();
 

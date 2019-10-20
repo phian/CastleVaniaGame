@@ -68,4 +68,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TexturesData\CandleSprites.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="TexturesData\TexturesPath.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="TexturesData\SimonSprites.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="TexturesData\BackgroundSprites.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

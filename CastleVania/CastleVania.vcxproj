@@ -39,6 +39,12 @@
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TexturesData\BackgroundSprites.txt" />
+    <Text Include="TexturesData\CandleSprites.txt" />
+    <Text Include="TexturesData\SimonSprites.txt" />
+    <Text Include="TexturesData\TexturesPath.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{767C055D-2429-4152-82CF-399B791C0951}</ProjectGuid>

@@ -1,0 +1,3 @@
+Textures\\simon.png
+Textures\\Candle.png
+Textures\\CastlevaniaMapLevel01a(1).png
