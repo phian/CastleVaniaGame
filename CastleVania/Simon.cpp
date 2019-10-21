@@ -145,7 +145,8 @@ void CSimon::Render()
 	}
 	else if (GetState() == SIMON_STATE_JUMP)
 	{
-		if (nx > 0) ani = SIMON_ANI_JUMP_RIGHT;
+		if (nx > 0)
+			ani = SIMON_ANI_JUMP_RIGHT;
 		else ani = SIMON_ANI_JUMP_LEFT;
 	}
 	else if (vx > 0)

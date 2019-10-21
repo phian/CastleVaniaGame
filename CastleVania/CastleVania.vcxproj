@@ -22,6 +22,7 @@
     <ClInclude Include="debug.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Knife.h" />
     <ClInclude Include="PillarOfFire.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Simon.h" />
@@ -32,6 +33,7 @@
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Knife.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PillarOfFire.cpp" />
     <ClCompile Include="Scene.cpp" />

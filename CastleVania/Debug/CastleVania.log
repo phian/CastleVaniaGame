@@ -1,8 +1,7 @@
 ﻿  main.cpp
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(39,1): warning C4005:  'ID_TEX_BBOX': macro redefinition
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(40,1): warning C4005:  'ID_TEX_BBOX': macro redefinition
 D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\GameObject.h(12): message :  see previous definition of 'ID_TEX_BBOX'
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(83,2): warning C4060:  switch statement contains no 'case' or 'default' labels
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(486,20): warning C4018:  '<': signed/unsigned mismatch
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(491,20): warning C4018:  '<': signed/unsigned mismatch
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(529,21): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(604,20): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(609,20): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(647,21): warning C4018:  '<': signed/unsigned mismatch
   CastleVania.vcxproj -> D:\source\Nhập môn phát triển game\CastleVaniaGame\Debug\CastleVania.exe

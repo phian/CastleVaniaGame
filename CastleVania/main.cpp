@@ -18,6 +18,7 @@
 #include "Simon.h"
 #include "PillarOfFire.h"
 #include "Scene.h"
+#include "Knife.h"
 
 using namespace std;
 
@@ -38,15 +39,22 @@ using namespace std;
 #define ID_TEX_PILLARFIRE 10
 #define ID_TEX_BBOX		  20
 #define ID_TEX_SCENE	  30
+#define ID_TEX_KNIFE	  40
 
 CGame * game;
 
 CSimon* Simon;
 CPillarFire* PillarFire;
 CScene* Scene;
+CKnife* Knife;
+
 
 vector<string> result; // save data read from txt file
 int Count = 0; // increase animation id 
+
+bool isUsingKnife;
+
+int temp;
 
 //CMario* mario;
 //CGoomba* goomba;
@@ -80,6 +88,34 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			Simon->SetSpeed(0, 0);
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 		break;*/
+	case DIK_F:
+		if (Simon->vx > 0)
+		{
+			Simon->SetSpeed(0, 0);
+			Knife->SetState(KNIFE_STATE_MOVING_RIGHT);
+			Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+		}
+		else if (Simon->vx < 0)
+		{
+			Simon->SetSpeed(0, 0);
+			Knife->SetState(KNIFE_STATE_MOVING_LEFT);
+			Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+		}
+		else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP || Simon->GetState() == SIMON_STATE_USE_WHIP_STAND)
+		{
+			if (Simon->nx > 0)
+			{
+				Knife->SetState(KNIFE_STATE_MOVING_RIGHT);
+				Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+			}
+			else
+			{
+				Knife->SetState(KNIFE_STATE_MOVING_LEFT);
+				Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+			}
+		}
+
+		isUsingKnife = true;
 	}
 }
 
@@ -106,7 +142,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
-		
+
 		if (Simon->GetState() == SIMON_STATE_JUMP) // Simon jump one time (jump again when simon is idle)
 			return;
 		if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
@@ -158,11 +194,16 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			Simon->SetSpeed(0, 0);
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 		}
-		else if(Simon->GetState() == SIMON_STATE_IDLE)
+		else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 	}
+	else if (game->IsKeyDown(DIK_F))
+	{
+		Simon->SetSpeed(0, 0);
+		Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+	}
 	else
-		if(Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
+		if (Simon->GetState() != SIMON_STATE_JUMP) // if previous state is not jump
 			Simon->SetState(SIMON_STATE_IDLE);
 }
 
@@ -237,13 +278,19 @@ vector<string> ReadFile(int id)
 
 	else if (id == 4)
 	{
+		outputFile.open("TexturesData\\KnifeSprites.txt");
 
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
 	}
 
 	return data;
 }
 
-int temp;
 /*
 	Load all game resources
 	In this example: load textures, sprites, animations and mario object
@@ -267,6 +314,10 @@ void LoadResources()
 	stemp = wstring(result[2].begin(), result[2].end());
 	path = stemp.c_str();
 	textures->Add(ID_TEX_SCENE, path, D3DCOLOR_XRGB(164, 0, 0));
+
+	stemp = wstring(result[3].begin(), result[3].end());
+	path = stemp.c_str();
+	textures->Add(ID_TEX_KNIFE, path, D3DCOLOR_XRGB(255, 0, 255));
 
 	//textures->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
@@ -420,6 +471,54 @@ void LoadResources()
 
 	// ----------------------------------------------------------------------//
 
+	// ----------------------------Knife-------------------------------------//
+	LPDIRECT3DTEXTURE9 texKnife = textures->Get(ID_TEX_KNIFE);
+
+	result = ReadFile(4);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texKnife);
+	}
+
+	ani = new CAnimation(100);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else
+		{
+			animations->Add(Count, ani);
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
+
+	Knife = new CKnife();
+
+	for (int i = 0; i <= Count; i++)
+	{
+		Knife->AddAnimation(i);
+	}
+
+	//Knife->SetPosition(Simon->x, Simon->y + 20);
+
+	objects.push_back(Knife);
+
+	Count = 0;
+
+	// ----------------------------------------------------------------------//
+
 	//for (int i = 0; i < 5; i++)
 	//{
 	//	CBrick* brick = new CBrick();
@@ -532,7 +631,17 @@ void Render()
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
 		for (int i = 0; i < objects.size(); i++)
-			objects[i]->Render();
+		{
+			if (objects[i] != Knife)
+				objects[i]->Render();
+			else if (objects[i] == Knife && isUsingKnife == true)
+			{
+				objects[i]->Render();
+
+				if (Knife->x < 0 || Knife->x > 1465)
+					isUsingKnife = false;
+			}
+		}
 
 		spriteHandler->End();
 		d3ddv->EndScene();
@@ -623,6 +732,7 @@ int Run()
 		}
 		else
 			Sleep(tickPerFrame - dt);
+
 	}
 
 	return 1;
