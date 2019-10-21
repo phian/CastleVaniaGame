@@ -52,7 +52,8 @@ CKnife* Knife;
 vector<string> result; // save data read from txt file
 int Count = 0; // increase animation id 
 
-bool isUsingKnife;
+bool isUsingKnife = false;
+bool isJumped;
 
 int temp;
 
@@ -83,39 +84,44 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 	//	if (Simon->GetState() == SIMON_STATE_SITDOWN) 
 	//		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 	//	break;
-	/*case DIK_S:
-		if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT) 
-			Simon->SetSpeed(0, 0);
-			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
-		break;*/
 	case DIK_F:
-		if (Simon->vx > 0)
+		if (isUsingKnife == false)
 		{
-			Simon->SetSpeed(0, 0);
-			Knife->SetState(KNIFE_STATE_MOVING_RIGHT);
-			Knife->SetPosition(Simon->x + 10, Simon->y + 15);
-		}
-		else if (Simon->vx < 0)
-		{
-			Simon->SetSpeed(0, 0);
-			Knife->SetState(KNIFE_STATE_MOVING_LEFT);
-			Knife->SetPosition(Simon->x + 10, Simon->y + 15);
-		}
-		else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP || Simon->GetState() == SIMON_STATE_USE_WHIP_STAND)
-		{
-			if (Simon->nx > 0)
+			if (Simon->vx > 0)
 			{
+				Simon->SetSpeed(0, 0);
 				Knife->SetState(KNIFE_STATE_MOVING_RIGHT);
 				Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+
+				isUsingKnife = true;
 			}
-			else
+			else if (Simon->vx < 0)
 			{
+				Simon->SetSpeed(0, 0);
 				Knife->SetState(KNIFE_STATE_MOVING_LEFT);
 				Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+
+				isUsingKnife = true;
+			}
+			else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP || Simon->GetState() == SIMON_STATE_USE_WHIP_STAND)
+			{
+				if (Simon->nx > 0)
+				{
+					Knife->SetState(KNIFE_STATE_MOVING_RIGHT);
+					Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+
+					isUsingKnife = true;
+				}
+				else
+				{
+					Knife->SetState(KNIFE_STATE_MOVING_LEFT);
+					Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+
+					isUsingKnife = true;
+				}
 			}
 		}
-
-		isUsingKnife = true;
+		break;
 	}
 }
 
@@ -142,10 +148,9 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	}
 	else if (game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
-
 		if (Simon->GetState() == SIMON_STATE_JUMP) // Simon jump one time (jump again when simon is idle)
 			return;
-		if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
 		if (Simon->y >= 225)
 			Simon->SetSpeed(SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
@@ -159,9 +164,10 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP)
 			return;
-		if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
+		else if (Simon->vy == 0 && Simon->GetState() != SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_JUMP); // jump again when simon is idle
-		if (Simon->y >= 225) Simon->SetSpeed(-SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
+		if (Simon->y >= 225)
+			Simon->SetSpeed(-SIMON_WALKING_SPEED, -SIMON_JUMP_SPEED_Y);
 	}
 	else if (game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_D) && Simon->GetState() != SIMON_STATE_JUMP) // if Simon is jumping -> disable DIK_DOWN
 	{
@@ -636,10 +642,15 @@ void Render()
 				objects[i]->Render();
 			else if (objects[i] == Knife && isUsingKnife == true)
 			{
-				objects[i]->Render();
-
 				if (Knife->x < 0 || Knife->x > 1465)
+				{
 					isUsingKnife = false;
+					break;
+				}
+				else
+				{
+					objects[i]->Render();
+				}
 			}
 		}
 
