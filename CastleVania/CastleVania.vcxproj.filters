@@ -41,6 +41,9 @@
     <ClInclude Include="Knife.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Whip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug.cpp">
@@ -73,6 +76,9 @@
     <ClCompile Include="Knife.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Whip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="TexturesData\CandleSprites.txt">
@@ -88,6 +94,9 @@
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="TexturesData\KnifeSprites.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="TexturesData\WhipSprites.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

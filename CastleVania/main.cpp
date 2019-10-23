@@ -19,6 +19,7 @@
 #include "PillarOfFire.h"
 #include "Scene.h"
 #include "Knife.h"
+#include "Whip.h"
 
 using namespace std;
 
@@ -40,6 +41,7 @@ using namespace std;
 #define ID_TEX_BBOX		  20
 #define ID_TEX_SCENE	  30
 #define ID_TEX_KNIFE	  40
+#define ID_TEX_WHIP		  50
 
 CGame * game;
 
@@ -47,12 +49,14 @@ CSimon* Simon;
 CPillarFire* PillarFire;
 CScene* Scene;
 CKnife* Knife;
+CWhip* Whip;
 
 
 vector<string> result; // save data read from txt file
 int Count = 0; // increase animation id 
 
 bool isUsingKnife = false;
+bool isUsingWhip = false;
 bool isJumped;
 
 int temp;
@@ -99,7 +103,7 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			{
 				Simon->SetSpeed(0, 0);
 				Knife->SetState(KNIFE_STATE_MOVING_LEFT);
-				Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+				Knife->SetPosition(Simon->x - 10, Simon->y + 15);
 
 				isUsingKnife = true;
 			}
@@ -115,13 +119,51 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 				else
 				{
 					Knife->SetState(KNIFE_STATE_MOVING_LEFT);
-					Knife->SetPosition(Simon->x + 10, Simon->y + 15);
+					Knife->SetPosition(Simon->x - 10, Simon->y + 15);
 
 					isUsingKnife = true;
 				}
 			}
 		}
 		break;
+	/*case DIK_D:
+		if (isUsingWhip == false)
+		{
+			if (Simon->nx > 0)
+			{
+				Whip->SetState(WHIP_STATE_USE_RIGHT);
+				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+			else
+			{
+				Whip->SetState(WHIP_STATE_USE_LEFT);
+				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+		}
+		break;
+	case DIK_S:
+		if (isUsingWhip == false)
+		{
+			if (Simon->nx > 0)
+			{
+				Whip->SetState(WHIP_STATE_USE_RIGHT);
+				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+			else
+			{
+				Whip->SetState(WHIP_STATE_USE_LEFT);
+				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+		}
+		break;*/
 	}
 }
 
@@ -192,7 +234,27 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			Simon->SetState(SIMON_STATE_JUMP);
 	}
 	else if (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_D) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
+	{
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
+
+		/*if (isUsingWhip == false)
+		{
+			if (Simon->nx > 0)
+			{
+				Whip->SetState(WHIP_STATE_USE_RIGHT);
+				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+			else
+			{
+				Whip->SetState(WHIP_STATE_USE_LEFT);
+				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+		}*/
+	}
 	else if (game->IsKeyDown(DIK_S))
 	{
 		if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT)
@@ -202,6 +264,24 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		}
 		else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+
+		/*if (isUsingWhip == false)
+		{
+			if (Simon->nx > 0)
+			{
+				Whip->SetState(WHIP_STATE_USE_RIGHT);
+				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+			else
+			{
+				Whip->SetState(WHIP_STATE_USE_LEFT);
+				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+
+				isUsingWhip = true;
+			}
+		}*/
 	}
 	else if (game->IsKeyDown(DIK_F))
 	{
@@ -284,7 +364,19 @@ vector<string> ReadFile(int id)
 
 	else if (id == 4)
 	{
-		outputFile.open("TexturesData\\KnifeSprites.txt");
+		outputFile.open("TexturesData\\KnifeSprites.txt", ios::in);
+
+		while (!outputFile.eof())
+		{
+			getline(outputFile, line);
+
+			data.push_back(line);
+		}
+	}
+
+	else if (id == 5)
+	{
+		outputFile.open("TexturesData\\WhipSprites.txt", ios::in);
 
 		while (!outputFile.eof())
 		{
@@ -324,6 +416,10 @@ void LoadResources()
 	stemp = wstring(result[3].begin(), result[3].end());
 	path = stemp.c_str();
 	textures->Add(ID_TEX_KNIFE, path, D3DCOLOR_XRGB(255, 0, 255));
+
+	stemp = wstring(result[4].begin(), result[4].end());
+	path = stemp.c_str();
+	textures->Add(ID_TEX_WHIP, path, D3DCOLOR_XRGB(255, 0, 255));
 
 	//textures->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
@@ -517,9 +613,54 @@ void LoadResources()
 		Knife->AddAnimation(i);
 	}
 
-	//Knife->SetPosition(Simon->x, Simon->y + 20);
-
 	objects.push_back(Knife);
+
+	Count = 0;
+
+	// ----------------------------------------------------------------------//
+
+	// -----------------------------Whip-------------------------------------//
+
+	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
+
+	result = ReadFile(5);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texWhip);
+	}
+
+	ani = new CAnimation(100);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else
+		{
+			animations->Add(Count, ani);
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
+
+	/*Whip = new CWhip();
+
+	for (int i = 0; i <= Count; i++)
+	{
+		Whip->AddAnimation(i);
+	}
+
+	objects.push_back(Whip);*/
 
 	Count = 0;
 
@@ -580,7 +721,6 @@ void LoadResources()
 		goomba->SetState(GOOMBA_STATE_WALKING);
 		objects.push_back(goomba);
 	}*/
-
 }
 
 /*
@@ -636,10 +776,19 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
+		if (isUsingWhip == true)
+		{
+			Whip->Render();
+			isUsingWhip = false;
+		}
+
 		for (int i = 0; i < objects.size(); i++)
 		{
-			if (objects[i] != Knife)
+			if (objects[i] != Knife && objects[i] != Whip)
+			{
 				objects[i]->Render();
+				continue;
+			}
 			else if (objects[i] == Knife && isUsingKnife == true)
 			{
 				if (Knife->x < 0 || Knife->x > 1465)
@@ -650,16 +799,22 @@ void Render()
 				else
 				{
 					objects[i]->Render();
+					continue;
 				}
 			}
+			/*else if (objects[i] == Whip && isUsingWhip == true)
+			{
+				objects[i]->Render();
+				isUsingWhip = false;
+			}*/
 		}
 
 		spriteHandler->End();
 		d3ddv->EndScene();
-	}
 
-	// Display back buffer content to the screen
-	d3ddv->Present(NULL, NULL, NULL, NULL);
+		// Display back buffer content to the screen
+		d3ddv->Present(NULL, NULL, NULL, NULL);
+	}
 }
 
 HWND CreateGameWindow(HINSTANCE hInstance, int nCmdShow, int ScreenWidth, int ScreenHeight)
