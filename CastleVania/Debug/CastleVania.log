@@ -1,9 +1,7 @@
-﻿  Whip.cpp
-  main.cpp
+﻿  main.cpp
 D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(41,1): warning C4005:  'ID_TEX_BBOX': macro redefinition
 D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\GameObject.h(12): message :  see previous definition of 'ID_TEX_BBOX'
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(736,20): warning C4018:  '<': signed/unsigned mismatch
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(741,20): warning C4018:  '<': signed/unsigned mismatch
-  Generating Code...
-D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(785,21): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(708,20): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(713,20): warning C4018:  '<': signed/unsigned mismatch
+D:\source\Nhập môn phát triển game\CastleVaniaGame\CastleVania\main.cpp(751,21): warning C4018:  '<': signed/unsigned mismatch
   CastleVania.vcxproj -> D:\source\Nhập môn phát triển game\CastleVaniaGame\Debug\CastleVania.exe

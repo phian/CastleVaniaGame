@@ -36,7 +36,7 @@ void CWhip::Render()
 {
 	int ani;
 
-	if (this->nx > 0) ani = WHIP_ANI_USE_RIGHT;
+	if (nx > 0) ani = WHIP_ANI_USE_RIGHT;
 	else ani = WHIP_ANI_USE_LEFT;
 
 	animations[ani]->Render(x, y);
@@ -49,10 +49,10 @@ void CWhip::SetState(int state)
 	switch (state)
 	{
 	case WHIP_STATE_USE_RIGHT:
-		this->nx = 1;
+		nx = 1;
 		break;
 	case WHIP_STATE_USE_LEFT:
-		this->nx = -1;
+		nx = -1;
 		break;
 	}
 }

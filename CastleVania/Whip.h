@@ -5,11 +5,11 @@
 #define WHIP_BBOX_WIDTH  20
 #define WHIP_BBOX_HEIGHT 40
 
-#define WHIP_STATE_USE_RIGHT	0
-#define WHIP_STATE_USE_LEFT		1
+#define WHIP_STATE_USE_RIGHT	100
+#define WHIP_STATE_USE_LEFT		200
 
-#define WHIP_ANI_USE_RIGHT	100
-#define WHIP_ANI_USE_LEFT	200
+#define WHIP_ANI_USE_RIGHT	0
+#define WHIP_ANI_USE_LEFT	1
 
 class CWhip : public CGameObject
 {

@@ -126,44 +126,6 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			}
 		}
 		break;
-	/*case DIK_D:
-		if (isUsingWhip == false)
-		{
-			if (Simon->nx > 0)
-			{
-				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
-
-				isUsingWhip = true;
-			}
-			else
-			{
-				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
-
-				isUsingWhip = true;
-			}
-		}
-		break;
-	case DIK_S:
-		if (isUsingWhip == false)
-		{
-			if (Simon->nx > 0)
-			{
-				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
-
-				isUsingWhip = true;
-			}
-			else
-			{
-				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
-
-				isUsingWhip = true;
-			}
-		}
-		break;*/
 	}
 }
 
@@ -237,23 +199,23 @@ void CSampleKeyHander::KeyState(BYTE* states)
 	{
 		Simon->SetState(SIMON_STATE_USE_WHIP_SIT);
 
-		/*if (isUsingWhip == false)
+		if (isUsingWhip == false)
 		{
 			if (Simon->nx > 0)
 			{
 				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+				Whip->SetPosition(Simon->x - 30, Simon->y + 10);
 
 				isUsingWhip = true;
 			}
 			else
 			{
 				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+				Whip->SetPosition(Simon->x + 30, Simon->y + 10);
 
 				isUsingWhip = true;
 			}
-		}*/
+		}
 	}
 	else if (game->IsKeyDown(DIK_S))
 	{
@@ -265,23 +227,23 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP)
 			Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
 
-		/*if (isUsingWhip == false)
+		if (isUsingWhip == false)
 		{
 			if (Simon->nx > 0)
 			{
 				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 5, Simon->y + 15);
+				Whip->SetPosition(Simon->x - 30, Simon->y + 10);
 
 				isUsingWhip = true;
 			}
 			else
 			{
 				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 50, Simon->y + 15);
+				Whip->SetPosition(Simon->x + 30, Simon->y + 10);
 
 				isUsingWhip = true;
 			}
-		}*/
+		}
 	}
 	else if (game->IsKeyDown(DIK_F))
 	{
@@ -336,6 +298,8 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+
+		outputFile.close();
 	}
 
 	else if (id == 2)
@@ -348,6 +312,8 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+
+		outputFile.close();
 	}
 
 	else if (id == 3)
@@ -360,6 +326,8 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+
+		outputFile.close();
 	}
 
 	else if (id == 4)
@@ -372,6 +340,8 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+
+		outputFile.close();
 	}
 
 	else if (id == 5)
@@ -384,6 +354,8 @@ vector<string> ReadFile(int id)
 
 			data.push_back(line);
 		}
+
+		outputFile.close();
 	}
 
 	return data;
@@ -527,6 +499,53 @@ void LoadResources()
 	
 	//-----------------------------------------------------------------------//
 
+	// -----------------------------Whip-------------------------------------//
+
+	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
+
+	result = ReadFile(5);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texWhip);
+	}
+
+	ani = new CAnimation(100);
+
+	for (unsigned i = 0; i < result.size(); i++)
+	{
+		istringstream iss(result[i]);
+		vector<string> data{ istream_iterator<string>{iss},
+									istream_iterator<string>{} };
+
+		if (data.size() > 0)
+			ani->Add(stoi(data[0]));
+		else
+		{
+			animations->Add(Count, ani);
+			++Count;
+			ani = new CAnimation(100);
+		}
+	}
+
+	Whip = new CWhip();
+
+	for (int i = 0; i <= Count; i++)
+	{
+		Whip->AddAnimation(i);
+	}
+
+	objects.push_back(Whip);
+
+	Count = 0;
+
+	// ----------------------------------------------------------------------//
+
 	// ----------------------------Simon-------------------------------------//
 	LPDIRECT3DTEXTURE9 texSimon = textures->Get(ID_TEX_SIMON);
 
@@ -614,53 +633,6 @@ void LoadResources()
 	}
 
 	objects.push_back(Knife);
-
-	Count = 0;
-
-	// ----------------------------------------------------------------------//
-
-	// -----------------------------Whip-------------------------------------//
-
-	LPDIRECT3DTEXTURE9 texWhip = textures->Get(ID_TEX_WHIP);
-
-	result = ReadFile(5);
-
-	for (unsigned i = 0; i < result.size(); i++)
-	{
-		istringstream iss(result[i]);
-		vector<string> data{ istream_iterator<string>{iss},
-									istream_iterator<string>{} };
-
-		if (data.size() > 0)
-			sprites->Add(stoi(data[0]), stoi(data[1]), stoi(data[2]), stoi(data[3]), stoi(data[4]), texWhip);
-	}
-
-	ani = new CAnimation(100);
-
-	for (unsigned i = 0; i < result.size(); i++)
-	{
-		istringstream iss(result[i]);
-		vector<string> data{ istream_iterator<string>{iss},
-									istream_iterator<string>{} };
-
-		if (data.size() > 0)
-			ani->Add(stoi(data[0]));
-		else
-		{
-			animations->Add(Count, ani);
-			++Count;
-			ani = new CAnimation(100);
-		}
-	}
-
-	/*Whip = new CWhip();
-
-	for (int i = 0; i <= Count; i++)
-	{
-		Whip->AddAnimation(i);
-	}
-
-	objects.push_back(Whip);*/
 
 	Count = 0;
 
@@ -776,12 +748,6 @@ void Render()
 
 		spriteHandler->Begin(D3DXSPRITE_ALPHABLEND);
 
-		if (isUsingWhip == true)
-		{
-			Whip->Render();
-			isUsingWhip = false;
-		}
-
 		for (int i = 0; i < objects.size(); i++)
 		{
 			if (objects[i] != Knife && objects[i] != Whip)
@@ -802,11 +768,11 @@ void Render()
 					continue;
 				}
 			}
-			/*else if (objects[i] == Whip && isUsingWhip == true)
+			else if (objects[i] == Whip && isUsingWhip == true)
 			{
 				objects[i]->Render();
 				isUsingWhip = false;
-			}*/
+			}
 		}
 
 		spriteHandler->End();
