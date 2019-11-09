@@ -14,16 +14,16 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += SIMON_GRAVITY * dt;
 
-	if (y > 240)
+	if (y > 245)
 	{
 		vy = 0; 
 		y = 245.0f;
 	}
 
-	if (GetState() == SIMON_STATE_JUMP && vy == 0) // Reset state after jump
-	{
-		SetState(SIMON_STATE_IDLE);
-	}
+	//if (GetState() == SIMON_STATE_JUMP && vy == 0) // Reset state after jump
+	//{
+	//	SetState(SIMON_STATE_IDLE);
+	//}
 	
 	x += dx;
 	y += dy;
@@ -38,6 +38,7 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			this->beginAttackTime = 0;
 			this->isAttacking = false;
+			this->animations[0]->ResetAnimation();
 		}
 	}
 
@@ -154,8 +155,7 @@ void CSimon::Render()
 	}
 	else if (GetState() == SIMON_STATE_JUMP)
 	{
-		if (nx > 0)
-			ani = SIMON_ANI_JUMP_RIGHT;
+		if (nx > 0) ani = SIMON_ANI_JUMP_RIGHT;
 		else ani = SIMON_ANI_JUMP_LEFT;
 	}
 	else if (vx > 0)
@@ -197,19 +197,17 @@ void CSimon::SetState(int state)
 			vy = 0;
 			break;
 		case SIMON_STATE_JUMP:
-			if (y >= 225)
+			if (y > 225)
 				vy = -SIMON_JUMP_SPEED_Y;
 			break;
 		case SIMON_STATE_USE_WHIP_SIT:
 			vx = 0;
 			vy = 0;
 
+			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			this->animations[SIMON_ANI_USE_WHIP_SIT_RIGHT]->ResetAnimation();
 			this->animations[SIMON_ANI_USE_WHIP_SIT_LEFT]->ResetAnimation();
-			this->animations[SIMON_ANI_USE_WHIP_STAND_RIGHT]->ResetAnimation();
-			this->animations[SIMON_ANI_USE_WHIP_STAND_LEFT]->ResetAnimation();
 			this->isAttacking = true;
-			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			break;
 		case SIMON_STATE_SITDOWN:
 			vx = 0;
@@ -217,12 +215,11 @@ void CSimon::SetState(int state)
 			break;
 		case SIMON_STATE_USE_WHIP_STAND:
 			vx = 0;
-			this->animations[SIMON_ANI_USE_WHIP_SIT_RIGHT]->ResetAnimation();
-			this->animations[SIMON_ANI_USE_WHIP_SIT_LEFT]->ResetAnimation();
+
+			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			this->animations[SIMON_ANI_USE_WHIP_STAND_RIGHT]->ResetAnimation();
 			this->animations[SIMON_ANI_USE_WHIP_STAND_LEFT]->ResetAnimation();
 			this->isAttacking = true;
-			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			break;
 	}
 }

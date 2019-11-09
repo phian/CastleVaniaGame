@@ -54,8 +54,7 @@ class CSimon : public CGameObject
 	int untouchable;
 	DWORD untouchable_start;
 
-	bool isAttacking = false; // check if Simon is attacking
-	int beginAttackTime = 0; // get time start attack to render attack animations till it is finish
+	
 public:
 	CSimon() : CGameObject()
 	{
@@ -69,4 +68,7 @@ public:
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
+
+	bool isAttacking = false; // check if Simon is attacking
+	int beginAttackTime = 0; // get time start attack to render attack animations till it is finish
 };

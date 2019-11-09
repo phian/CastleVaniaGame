@@ -78,7 +78,7 @@ CSampleKeyHander* keyHandler;
 void CSampleKeyHander::OnKeyDown(int KeyCode)
 {
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
-
+	
 	switch (KeyCode)
 	{
 	//case DIK_D: // reset
@@ -126,6 +126,37 @@ void CSampleKeyHander::OnKeyDown(int KeyCode)
 			}
 		}
 		break;
+	case DIK_S:
+		if (Simon->beginAttackTime == 0)
+		{
+			if (isUsingWhip == false)
+			{
+				if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT)
+				{
+					Simon->SetSpeed(0, 0);
+					Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+				}
+				else if (Simon->GetState() == SIMON_STATE_IDLE || Simon->GetState() == SIMON_STATE_JUMP)
+					Simon->SetState(SIMON_STATE_USE_WHIP_STAND);
+
+				if (Simon->nx > 0)
+				{
+					Whip->SetState(WHIP_STATE_USE_RIGHT);
+					Whip->SetPosition(Simon->x - 75, Simon->y + 3.2);
+
+					isUsingWhip = true;
+				}
+				else
+				{
+					Whip->SetState(WHIP_STATE_USE_LEFT);
+					Whip->SetPosition(Simon->x - 75, Simon->y + 3);
+
+					isUsingWhip = true;
+				}
+			}
+		}
+
+		break;
 	}
 }
 
@@ -144,13 +175,15 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		mario->SetState(MARIO_STATE_WALKING_LEFT);
 	else
 		mario->SetState(MARIO_STATE_IDLE);*/
+	if (Simon->beginAttackTime != 0)
+		return;
 
-	if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_DOWN) && !game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
 		if (Simon->vy == 0)
 			Simon->SetState(SIMON_STATE_WALKING_RIGHT);
 	}
-	else if (game->IsKeyDown(DIK_RIGHT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_SPACE) && game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP) // Simon jump one time (jump again when simon is idle)
 			return;
@@ -164,7 +197,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		if (Simon->vy == 0)
 			Simon->SetState(SIMON_STATE_WALKING_LEFT);
 	}
-	else if (game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_SPACE) && game->IsKeyDown(DIK_LEFT) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP)
 			return;
@@ -188,7 +221,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 		else
 			Simon->SetState(SIMON_STATE_SITDOWN);
 	}
-	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D))
+	else if (game->IsKeyDown(DIK_SPACE) && !game->IsKeyDown(DIK_S) && !game->IsKeyDown(DIK_D) && !game->IsKeyDown(DIK_RIGHT) && !game->IsKeyDown(DIK_LEFT))
 	{
 		if (Simon->GetState() == SIMON_STATE_JUMP)
 			return;
@@ -217,7 +250,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			}
 		}
 	}
-	else if (game->IsKeyDown(DIK_S))
+	/*else if (game->IsKeyDown(DIK_S))
 	{
 		if (Simon->GetState() == SIMON_STATE_WALKING_RIGHT || Simon->GetState() == SIMON_STATE_WALKING_LEFT)
 		{
@@ -244,7 +277,7 @@ void CSampleKeyHander::KeyState(BYTE* states)
 				isUsingWhip = true;
 			}
 		}
-	}
+	}*/
 	else if (game->IsKeyDown(DIK_F))
 	{
 		Simon->SetSpeed(0, 0);
