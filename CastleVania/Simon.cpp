@@ -32,6 +32,15 @@ void CSimon::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (vx > 0 && x > 1465 - 50) x = 1415;
 	if (vx < 0 && x < 0) x = 0;
 
+	if (isAttacking == true)
+	{
+		if (GetTickCount() - this->beginAttackTime > 300)
+		{
+			this->beginAttackTime = 0;
+			this->isAttacking = false;
+		}
+	}
+
 	/*vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -194,6 +203,13 @@ void CSimon::SetState(int state)
 		case SIMON_STATE_USE_WHIP_SIT:
 			vx = 0;
 			vy = 0;
+
+			this->animations[SIMON_ANI_USE_WHIP_SIT_RIGHT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_SIT_LEFT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_STAND_RIGHT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_STAND_LEFT]->ResetAnimation();
+			this->isAttacking = true;
+			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			break;
 		case SIMON_STATE_SITDOWN:
 			vx = 0;
@@ -201,6 +217,12 @@ void CSimon::SetState(int state)
 			break;
 		case SIMON_STATE_USE_WHIP_STAND:
 			vx = 0;
+			this->animations[SIMON_ANI_USE_WHIP_SIT_RIGHT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_SIT_LEFT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_STAND_RIGHT]->ResetAnimation();
+			this->animations[SIMON_ANI_USE_WHIP_STAND_LEFT]->ResetAnimation();
+			this->isAttacking = true;
+			this->beginAttackTime = GetTickCount(); // get time Simon start attack
 			break;
 	}
 }

@@ -14,6 +14,7 @@ void CWhip::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void CWhip::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	//this->animations[0]->ResetAnimation();
 	//CGameObject::Update(dt, coObjects);
 
 	//

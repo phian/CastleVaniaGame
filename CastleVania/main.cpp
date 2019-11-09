@@ -204,14 +204,14 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			if (Simon->nx > 0)
 			{
 				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 30, Simon->y + 10);
+				Whip->SetPosition(Simon->x - 77, Simon->y + 20);
 
 				isUsingWhip = true;
 			}
 			else
 			{
 				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 30, Simon->y + 10);
+				Whip->SetPosition(Simon->x - 75, Simon->y + 20);
 
 				isUsingWhip = true;
 			}
@@ -232,14 +232,14 @@ void CSampleKeyHander::KeyState(BYTE* states)
 			if (Simon->nx > 0)
 			{
 				Whip->SetState(WHIP_STATE_USE_RIGHT);
-				Whip->SetPosition(Simon->x - 30, Simon->y + 10);
+				Whip->SetPosition(Simon->x - 75, Simon->y + 3.2);
 
 				isUsingWhip = true;
 			}
 			else
 			{
 				Whip->SetState(WHIP_STATE_USE_LEFT);
-				Whip->SetPosition(Simon->x + 30, Simon->y + 10);
+				Whip->SetPosition(Simon->x - 75, Simon->y + 3);
 
 				isUsingWhip = true;
 			}

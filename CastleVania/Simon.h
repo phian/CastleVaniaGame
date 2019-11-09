@@ -46,11 +46,16 @@
 #define MARIO_UNTOUCHABLE_TIME 5000
 
 
+
+
 class CSimon : public CGameObject
 {
 	int level;
 	int untouchable;
 	DWORD untouchable_start;
+
+	bool isAttacking = false; // check if Simon is attacking
+	int beginAttackTime = 0; // get time start attack to render attack animations till it is finish
 public:
 	CSimon() : CGameObject()
 	{
